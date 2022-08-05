@@ -3,8 +3,8 @@
 For this project, we use multiple linear regression modeling to analyze house sales in a King County, a large county located in the State of Washington.
 
    - Link to Technical Notebook: 
-   - Link to final presentation:
-   - Link to original data sources: 
+   - Link to final presentation: https://github.com/AliRampur/Phase-2-Group-Project/blob/main/Presentation.pdf
+   - Link to original data sources: https://github.com/AliRampur/Phase-2-Group-Project/tree/main/data
 
 # 2. Business Problem
 
@@ -116,7 +116,7 @@ Below is a list of the engineered variables we decided to include in the next it
 
 Multi Regression - # 3: We then ran an updated multiple regression model after taking out the insignificant variables, or x-variables that had a p-value greater than .05.
 
-Multi Regression # 4: Since certain assumptions were not met and we were hoping to further increase the r-squared  value while decreasing the error rate, we attempted to apply a log function to the x and y variables.
+Multi Regression # 4: Since certain assumptions were not met and we were hoping to further increase the r-squared value while decreasing the error rate, we attempted to apply a log function to the x and y variables.
 
 
 
@@ -124,19 +124,10 @@ Multi Regression # 4: Since certain assumptions were not met and we were hoping 
 
 Our analysis resulted in the following visualizations and underlying observations:
 
-   1. Price vs Top Correlationship ![image]()
-    
+  1. Highest Relationship (Corr) - Original Variables ![image](https://github.com/AliRampur/Phase-2-Group-Project/blob/main/pics/base_eng.png)
 
 
-
-
-
-
-   2. Price vs. Top Correlations ![image](https://github.com/AliRampur/Phase-2-Group-Project/blob/main/pics/base_eng.png)
-
-
-
-
+  2. Highest Relationship (Corr) - After Engineered Variables ![image](https://github.com/AliRampur/Phase-2-Group-Project/blob/main/pics/eng_space.png)
 
 
 # 6. Recommendations / Conclusion
