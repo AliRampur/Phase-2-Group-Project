@@ -15,8 +15,7 @@ King County Development LLC is a new residential real estate developer trying to
 
 Our first step in analyzing the data was to review the column descriptions and then prepare a correlation heat map of all the available fields, including price, to better understand their realtionship to one another.
 
-   ### Correlation of Price to other potential indicators
-   
+   ### Correlation of Price to other potential indicator - Heat Map:
 ![image](https://github.com/AliRampur/Phase-2-Group-Project/blob/main/pics/corr_heatmap.png)
 
 
