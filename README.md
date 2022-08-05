@@ -2,9 +2,9 @@
 
 For this project, we use multiple linear regression modeling to analyze house sales in a King County, a large county located in the State of Washington.
 
-    - Link to Technical Notebook: 
-    - Link to final presentation:
-    - Link to original data sources: 
+   - Link to Technical Notebook: 
+   - Link to final presentation:
+   - Link to original data sources: 
 
 # 2. Business Problem
 
@@ -17,42 +17,42 @@ Our first step in analyzing the data was to review the column descriptions and t
 
    ### Correlation of Price to other potential indicators
    
-![image]
+![image](https://github.com/AliRampur/Phase-2-Group-Project/blob/main/pics/corr_heatmap.png)
 
 
 After analyzing this heat map and specifically, identify potential colinearity between variables, we decided to consider the following potential continuous, discrete, and categorical variables within our analysis:
-    - data
-    - sqft_living
-    - sqft_lot
-    - sqft_basement
-    - sqft_garage
-    - sqft_patio
-    - yr_built
-    - yr_renovated
-    - lat
-    - long
-    - greenbelt
-    - nuisance
-    - view
-    - condition
-    - grade
-    - sewer_system
-    - address
+  - data
+  - sqft_living
+  - sqft_lot
+  - sqft_basement
+  - sqft_garage
+  - sqft_patio
+  - yr_built
+  - yr_renovated
+  - lat
+  - long
+  - greenbelt
+  - nuisance
+  - view
+  - condition
+  - grade
+  - sewer_system
+  - address
 
 For example, we did not consider number of bedrooms and bathroom, as this appeared to be correlated with square footage.
 
 Certain of these fields were them modified into ordinal (or binary) or one hot encoding (categorical). These include
-    - greenbelt - changed to binary
-    - nuisance - changed to binary
-    - sew_system - changed to binary of private vs public
-    - view - changed to ordinal
-    - condition - changed to ordinal
-    - grade - changed to ordinal
-    - address - extracted zip and city, and applied categorical through one hot encoding
+   - greenbelt - changed to binary
+   - nuisance - changed to binary
+   - sew_system - changed to binary of private vs public
+   - view - changed to ordinal
+   - condition - changed to ordinal
+   - grade - changed to ordinal
+   - address - extracted zip and city, and applied categorical through one hot encoding
 
 After reviewing and obtaining a better unstanding of the dataset, and comparing the specific ask made by King County Development, we decided to filter the dataset based on the following:
 
-    1. Based on our research, all zip codes in King County start with a '98'. We identified a number of sales that did not have a zip code that started with '98', and some addresses were from other states!
+   1. Based on our research, all zip codes in King County start with a '98'. We identified a number of sales that did not have a zip code that started with '98', and some addresses were from other states!
     
     '''Python
     df['zip'] = [x.split(',')[2][-5:] for x in df['address']] 
