@@ -20,7 +20,7 @@ Our first step in analyzing the data was to review the column descriptions and t
 
 
 After analyzing this heat map and specifically, identify potential colinearity between variables, we decided to consider the following potential continuous, discrete, and categorical variables within our analysis:
-  - data
+  - date (sales)
   - sqft_living
   - sqft_lot
   - sqft_basement
@@ -40,10 +40,10 @@ After analyzing this heat map and specifically, identify potential colinearity b
 
 For example, we did not consider number of bedrooms and bathroom, as this appeared to be correlated with square footage.
 
-Certain of these fields were them modified into ordinal (or binary) or one hot encoding (categorical). These include
+Certain of these fields were theN modified into ordinal (or binary) or one hot encoding (categorical). These include
    - greenbelt - changed to binary
    - nuisance - changed to binary
-   - sew_system - changed to binary of private vs public
+   - sewer_system - changed to binary of private vs public
    - view - changed to ordinal
    - condition - changed to ordinal
    - grade - changed to ordinal
@@ -51,43 +51,80 @@ Certain of these fields were them modified into ordinal (or binary) or one hot e
 
 After reviewing and obtaining a better unstanding of the dataset, and comparing the specific ask made by King County Development, we decided to filter the dataset based on the following:
 
-   1. Based on our research, all zip codes in King County start with a '98'. We identified a number of sales that did not have a zip code that started with '98', and some addresses were from other states!
+   1. Based on our research, all zip codes in King County start with a '98'. We identified a number of house sales that did not have a zip code starting with '98', and some addresses were from other states!
     
-    '''Python
     df['zip'] = [x.split(',')[2][-5:] for x in df['address']] 
     df[df.zip.str.startswith(('98'))]
-    '''
     
+   2. We filtered the sales data to houses that had greater than 1,100 sq ft. King County wants us to focus on single family homes (i.e. no condos / studios) and by building houses with a minimum of approximately 1,100 sq ft, they may be eligible to receive FAR incentives.
+    
+    sqft_filter1 = df["sqft_living"] > 1100
+    df = df.loc[sqft_filter1]
+    
+   3. In order to help identify the best cities and areas to build in or near, we further reduced the house sales data to sales in cities that had a minimum of 30 sales within that city.
+    
+    drop_city = df.groupby('city').count()['price'].reset_index()
+    drop_city_columns = drop_city[ drop_city['price'] < 30 ].transpose()
+    drop_city_columns.columns = drop_city_columns.iloc[0]
+    drop_city = list(drop_city_columns.columns)
+    for city in drop_city:
+        df = df[~df.city.str.contains(city)]
+   
+   4. Filtering on houses to only include homes that met minimum code requirements, and excluded the highest grade quality which includes custom homes and mansions. This filter was based on the  grade quality, which we converted into an ordinal category.
+
+    grade_filter1 = df["grade"] > 5
+    grade_filter2 = df["grade"] < 11
+    df = df.loc[grade_filter1 & grade_filter2]
+   
 # 4. Regression Modeling - Iterative Approach
 
 The reason we are applying regression modeling approach is because our client has asked for specific recommendations that will help maximize their revenue (i.e. price) when they sell houses either direct to home buyers or wholesalers. In either scenario, they want to be able to estimate a potential price range for each house they build. They also want to know which variables have the biggest impact on price, so that they can either focus (or stay away from) those specific variables.
 
-### _1st Simple Linear Regression Model_
+### _Baseline Simple Linear Regression Model_
 
-```Python
-x_baseline = df_num['sqft_living']
-y = df_num['price']
-baseline_model = sm.OLS(y, sm.add_constant(x_baseline))
-baseline_results = baseline_model.fit()
-baseline_results.summary()
-```
+To begin our regression model, we first performed a baseline model of price vs. sqft_living. Generally, our understanding of housing prices is that sqft_living is presumably one of the most correlated variables against price:
+
+    x_baseline = df_num['sqft_living']
+    y = df_num['price']
+    baseline_model = sm.OLS(y, sm.add_constant(x_baseline))
+    baseline_results = baseline_model.fit()
+    baseline_results.summary()
+
 The baseline model above resulted in a vary low P-value (signifant), resulted in an R-squared of .37, and a square foot living coefficient of +$560 / sq ft.
 
-Once we performed this initial baseline model, we then began further iterate and identify potential relationships between price and the other variables
+Once we performed this initial baseline model, we then began to further iterate and identify potential relationships between price and the other variables in order to improve the overall model effectiveness.
 
-Here is scatter graph that maps price against sqft_living:
+Here is a scatter graph that maps price against sqft_living:
 
 ![image](https://github.com/AliRampur/Phase-2-Group-Project/blob/main/pics/Scatter_Price%20vs%20Living%20Sqft.png)
 
 
 ### _Multi Regression Modeling_
 
+Multi Regression - # 1: We ran various iterations of multiple regression models by including many of the other potential variables. One of the first models we performed included a categorical variable for zip code to try and identify statistically significant zip codes that had higher coefficients (i.e higher housing prices).
+
+After reviewing the results of this model, we determined that many of the zip codes had insignificant pvalues, and would therefore have to be taken out and the sheer number of zip codes made the model difficult to understand and have a large number of predictors. Further, after running the model, it appeared that the pvalue for the constant was also insignificant, putting the entire model into question. We decided to scrap the zip code approach.
+
+Multi Regression - # 2: We then ran a multiple regression model by including many of the same continuous and discrete variables discussed above, but this time, included a categorical variable for city/area that was extracted from the address field (e.g. 'Seattle', 'Kent', 'Bellevue', etc.). This model resulted in far fewer x-
+variables than the # 1 discussed above, and the p-value was significant, however the R-squared (explanation of variance) was not at the level we were hoping for. Therefore, we decided to further analyze the other continuous and ordinal variables, such as sqaure footage and grade, and apply data engineering to identify predictor variables that could improve the accuracy and error rate of our model.
+
+Below is a list of the engineered variables we decided to include in the next iteration of our model:
+    - Design_decade (age of house grouped by decade) - An ordinal variable based on the age of the house, while also considering whether renovation was performed, and then using the renovation year instead of the year built. The data was then binned into decades.
+    - Total Square Footage - sum of sqft_living, sqft_above, sqft_basement and sqft_patio
+    - Weighted living square footage - multiply sqft_living by the ordinal grade value
+    - Build qualitative factors by grade - mutiply various build factors (nuisance, basement, patio, sewer, condition, etc) by grade
+
+Multi Regression - # 3: We then ran an updated multiple regression model after taking out the insignificant variables, or x-variables that had a p-value greater than .05.
+
+Multi Regression # 4: Since certain assumptions were not met and we were hoping to further increase the r-squared  value while decreasing the error rate, we attempted to apply a log function to the x and y variables.
+
+
 
 # 5. Data Visualizations
 
 Our analysis resulted in the following visualizations and underlying observations:
 
-   1. Price vs Top Coefficients ![image]()
+   1. Price vs Top Correlationship ![image]()
     
 
 
@@ -107,13 +144,11 @@ Our analysis resulted in the following visualizations and underlying observation
 
 Based on our data analysis and the visualizations above, here are some key recommendations for King County Development to consider:
 
-   1. The bigger the house, the higher the price. That said, we recommend houses at least in the 2,000 sqft range.
-    
+   1. The bigger the house, the higher the price. That said, we recommend houses at least in the 2,000 sqft range to garner higher interest from your average family and allow King County Development to control costs.
     
    2. The top home prices were generally in Medina, Clyde Hill, Mercer Island. 
 
-
-   3. Build quality (i.e. grade) matters. This could be due to multiple factors, such as the impact of weather (rain and snow), the county being right of the shoreline, and the fact that people in this area may command a higher salary and expect a higher overall build quality.
+   3. Build quality (i.e. grade) matters. This could be due to multiple factors, such as the impact of weather (rain and snow), the county being right off the shoreline, and the fact that people in this area command a higher salary and expect a higher overall build quality.
 
    4. Waterfronts and nicer views typically command a higher price. Even if shorelines are fully developed, King County Development should consider creating "man-made" lakes near areas that have a good view of the mountains or developing in areas that have access to natural bodies of water.
 
