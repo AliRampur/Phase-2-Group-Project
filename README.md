@@ -14,18 +14,126 @@ King County Development LLC is a new residential real estate developer trying to
 # 3. Exploratory Data Analysis 
 
 Our first step in analyzing the data was to review the column descriptions and then prepare a correlation heat map of all the available fields, including price, to better understand their realtionship to one another.
-It is up to you to decide what data from this dataset to use and how to use it. **If you are feeling overwhelmed or behind**, we recommend you **ignore** some or all of the following features:
 
-* `date`
-* `view`
-* `sqft_above`
-* `sqft_basement`
-* `yr_renovated`
-* `address`
-* `lat`
-* `long`
+   ### Correlation of Price to other potential indicators
+   
+![image]
 
-### Key Points
+
+After analyzing this heat map and specifically, identify potential colinearity between variables, we decided to consider the following potential continuous, discrete, and categorical variables within our analysis:
+    - data
+    - sqft_living
+    - sqft_lot
+    - sqft_basement
+    - sqft_garage
+    - sqft_patio
+    - yr_built
+    - yr_renovated
+    - lat
+    - long
+    - greenbelt
+    - nuisance
+    - view
+    - condition
+    - grade
+    - sewer_system
+    - address
+
+For example, we did not consider number of bedrooms and bathroom, as this appeared to be correlated with square footage.
+
+Certain of these fields were them modified into ordinal (or binary) or one hot encoding (categorical). These include
+    - greenbelt - changed to binary
+    - nuisance - changed to binary
+    - sew_system - changed to binary of private vs public
+    - view - changed to ordinal
+    - condition - changed to ordinal
+    - grade - changed to ordinal
+    - address - extracted zip and city, and applied categorical through one hot encoding
+
+After reviewing and obtaining a better unstanding of the dataset, and comparing the specific ask made by King County Development, we decided to filter the dataset based on the following:
+
+    1. Based on our research, all zip codes in King County start with a '98'. We identified a number of sales that did not have a zip code that started with '98', and some addresses were from other states!
+    
+    '''Python
+    df['zip'] = [x.split(',')[2][-5:] for x in df['address']] 
+    df[df.zip.str.startswith(('98'))]
+    '''
+    
+# 4. Regression Modeling - Iterative Approach
+
+The reason we are applying regression modeling approach is because our client has asked for specific recommendations that will help maximize their revenue (i.e. price) when they sell houses either direct to home buyers or wholesalers. In either scenario, they want to be able to estimate a potential price range for each house they build. They also want to know which variables have the biggest impact on price, so that they can either focus (or stay away from) those specific variables.
+
+### _1st Simple Linear Regression Model_
+
+```Python
+x_baseline = df_num['sqft_living']
+y = df_num['price']
+baseline_model = sm.OLS(y, sm.add_constant(x_baseline))
+baseline_results = baseline_model.fit()
+baseline_results.summary()
+```
+The baseline model above resulted in a vary low P-value (signifant), resulted in an R-squared of .37, and a square foot living coefficient of +$560 / sq ft.
+
+Once we performed this initial baseline model, we then began further iterate and identify potential relationships between price and the other variables
+
+### _Multi Regression Modeling_
+
+
+# 5. Data Visualizations
+
+Our analysis resulted in the following visualizations and underlying observations:
+
+   1. Price vs Top Coefficients ![image]()
+    
+
+
+
+
+
+
+   2. Price vs. Top Correlations ![image]()
+
+
+
+
+
+
+
+
+   3. Release Month vs. Profitability ![image]()
+
+
+
+
+
+
+
+
+
+# 4. Recommendations / Conclusion
+
+
+Based on our data analysis and the visualizations above, our 3 recommendations are as follows:
+
+   1. Sci-Fi / Action-Adventure Movie - June/July Release
+       - Microsoft should produce a big, action-packed sci-fi / action-adventure movie on existing IP. We think "Gears of War" would be a great first movie. They could consider making it slightly horror, which also does well overall.
+        - This would also allow Microsoft to feature one of its own, and very successful, IP products.
+        - The movie should be release in or around June or July (US big summer hit). These are when many of the big Marvel, DC, and Star Wars movies are released. You may want to stay away from holiday weekends, so as not to compete with those established franchiises.
+        
+    
+    
+   2. Animated / Family - December release
+        - Microsoft should produce a family-friendly animated movie, that will further expand their viewership to kids and others who are not interested in the "Gears of War" franchise.
+        - This movie should be released in December, when families are together for the holidays or consider mid-December to avoid competitor releases.
+
+
+
+   3. Comedy (Possibly Romantic) - November release
+        - Finally, Microsoft should invest in a Comedy, potentially a Rom-Com.
+        - This would again, expand their following and possibly obtain new viewers (more females, couples, etc.).
+        - This movie should be released in November, which is a very successful month in terms of ROI and Net Income.
+
+
 
 * **Your goal in regression modeling is to yield findings to support relevant recommendations. Those findings should include a metric describing overall model performance as well as at least two regression model coefficients.** As you explore the data and refine your stakeholder and business problem definitions, make sure you are also thinking about how a linear regression model adds value to your analysis. "The assignment was to use linear regression" is not an acceptable answer! You can also use additional statistical techniques other than linear regression, so long as you clearly explain why you are using each technique.
 
