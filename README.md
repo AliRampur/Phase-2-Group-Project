@@ -75,6 +75,8 @@ After reviewing and obtaining a better unstanding of the dataset, and comparing 
     grade_filter1 = df["grade"] > 5
     grade_filter2 = df["grade"] < 11
     df = df.loc[grade_filter1 & grade_filter2]
+    
+
    
 # 4. Regression Modeling - Iterative Approach
 
@@ -101,11 +103,11 @@ Here is a scatter graph that maps price against sqft_living:
 
 ### _Multi Regression Modeling_
 
-Multi Regression - # 1: We ran various iterations of multiple regression models by including many of the other potential variables. One of the first models we performed included a categorical variable for zip code to try and identify statistically significant zip codes that had higher coefficients (i.e higher housing prices).
+_Multi Regression - # 1_: We ran various iterations of multiple regression models by including many of the other potential variables. One of the first models we performed included a categorical variable for zip code to try and identify statistically significant zip codes that had higher coefficients (i.e higher housing prices).
 
 After reviewing the results of this model, we determined that many of the zip codes had insignificant pvalues, and would therefore have to be taken out and the sheer number of zip codes made the model difficult to understand and have a large number of predictors. Further, after running the model, it appeared that the pvalue for the constant was also insignificant, putting the entire model into question. We decided to scrap the zip code approach.
 
-Multi Regression - # 2: We then ran a multiple regression model by including many of the same continuous and discrete variables discussed above, but this time, included a categorical variable for city/area that was extracted from the address field (e.g. 'Seattle', 'Kent', 'Bellevue', etc.). This model resulted in far fewer x-
+_Multi Regression - # 2_: We then ran a multiple regression model by including many of the same continuous and discrete variables discussed above, but this time, included a categorical variable for city/area that was extracted from the address field (e.g. 'Seattle', 'Kent', 'Bellevue', etc.). This model resulted in far fewer x-
 variables than the # 1 discussed above, and the p-value was significant, however the R-squared (explanation of variance) was not at the level we were hoping for. Therefore, we decided to further analyze the other continuous and ordinal variables, such as sqaure footage and grade, and apply data engineering to identify predictor variables that could improve the accuracy and error rate of our model.
 
 Below is a list of the engineered variables we decided to include in the next iteration of our model:
@@ -114,9 +116,33 @@ Below is a list of the engineered variables we decided to include in the next it
     - Weighted living square footage - multiply sqft_living by the ordinal grade value
     - Build qualitative factors by grade - mutiply various build factors (nuisance, basement, patio, sewer, condition, etc) by grade
 
-Multi Regression - # 3: We then ran an updated multiple regression model after taking out the insignificant variables, or x-variables that had a p-value greater than .05.
+_Multi Regression - # 3_: We then ran updated multiple regression models after taking out the insignificant variables, or x-variables that had a p-value greater than .05. We tried upwards of 20+ models and felt this was the best model for the purpose outlined by King County Development.
 
-Multi Regression # 4: Since certain assumptions were not met and we were hoping to further increase the r-squared value while decreasing the error rate, we attempted to apply a log function to the x and y variables.
+Here is a summary of this model:
+
+the Mean price for Train is: 1176109.7997471415
+the Mean price for Test is: 1155499.8809563066
+
+the standard deviation in price for Train is: 820914.3331297395
+the standard deviation in price for Test is: 754691.7243848713
+
+the adjusted R-squared value for Train is: 0.6428252494676545
+the adjusted R-squared value for Test is: 0.6924221387134799
+
+the F-statistic p-value for Train is: 0.0
+the F-statistic p-value for Test is: 0.0
+
+The R-squared indicates that the model explains 64 to 69% of the variance in the data. 
+
+For this specific MAE evaluation, the MEA scores mean that our model is off by about $270k dollars on a given prediction on the price.
+
+The RMSE values of 49k and 41k indicate our model is off by $410-490k on a given prediction on price.
+
+Regarding the MAE, an MAE of 270,000 is 20 percent of the average home value of 1.1 Million.
+
+Regarding the RMSE, an RMSE of 490,000 is 40 percent of the average home value of 1.1 Million.
+
+_Multi Regression # 4_: Since certain assumptions were not met and we were hoping to further increase the r-squared value while decreasing the error rate, we attempted to apply a log function to the x and y variables.
 
 
 
@@ -128,9 +154,38 @@ Our analysis resulted in the following visualizations and underlying observation
 
 
   2. Highest Relationship (Corr) - After Engineered Variables ![image](https://github.com/AliRampur/Phase-2-Group-Project/blob/main/pics/eng_space.png)
+  
+ 
+# 6. Testing of Assumptions
+
+We then tested the model to see if it passed the 4 assumptions of linear regression, known by the acronym LINE:
+- Linearity
+- Independence
+- Normality
+- Equal Variance
+
+Below is a summary on two of the assumptions that did not pass after reviewing the results of the model.
+
+### _Normality_:
+
+![image](https://github.com/AliRampur/Phase-2-Group-Project/blob/main/pics/QQplot.png)
+
+To determine the normality of the model, we can look at the histogram of residuals and QQ plot. We can also reference the Jarque-Bera test results.
+
+- We can reject the null hypothesis as the residual P value is below alpha, and so the distribution is not normal.
+- The fix is to transform non-normal features or the target by applying a log transform.
+
+### _Equal Variance_:
+
+![image](https://github.com/AliRampur/Phase-2-Group-Project/blob/main/pics/skedacity.png)
+
+For this assumption, we have a p value below alpha. We can reject the null hypothesis, so the model is heteroscedastic.
+
+Overall, it looks like our model only satisfies the independence tenet of the assumptions. We'll dig back into why this is so and see if we can improve the inference model.
 
 
-# 6. Recommendations / Conclusion
+
+# 7. Recommendations / Conclusion
 
 
 Based on our data analysis and the visualizations above, here are some key recommendations for King County Development to consider:
@@ -143,3 +198,8 @@ Based on our data analysis and the visualizations above, here are some key recom
 
    4. Waterfronts and nicer views typically command a higher price. Even if shorelines are fully developed, King County Development should consider creating "man-made" lakes near areas that have a good view of the mountains or developing in areas that have access to natural bodies of water.
 
+We were also able to create both an inferential and predictive model, which were analyzed to see if they meet the assumptions of linear regression and error.
+
+   1. Our predictive model only meets one of the tenets of linear regression. Our inferential model, that uses log(price), is able to meet all assumptions of linear regression except having a normal distribution. We would continue to work on this model and it's variables given additional time.
+   
+   2. Our predictive model has an MAE of $270000, and an RMSE of $490000.
