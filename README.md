@@ -150,12 +150,14 @@ _Multi Regression # 4_: Since certain assumptions were not met and we were hopin
 
 Our analysis resulted in the following visualizations and underlying observations:
 
-  1. Highest Relationship (Corr) - Original Variables ![image](https://github.com/AliRampur/Phase-2-Group-Project/blob/main/pics/base_eng.png)
+  1. Highest Relationship (Corr) - Original Non-Spacial Variables ![image](https://github.com/AliRampur/Phase-2-Group-Project/blob/main/pics/base_eng.png)
 
-
+     We can see that 'grade has the highest correlation to price, followed by 'view'.
+  
   2. Highest Relationship (Corr) - After Engineered Variables ![image](https://github.com/AliRampur/Phase-2-Group-Project/blob/main/pics/eng_space.png)
   
- 
+      As part of the engineered variables, we multiplied space-related variables (sq ft) by grade, which led to a increase in correlation to price. We also added multiple sq ft categories (above, basement, garage, and patio) to arrive at a total sq ft.
+      
 # 6. Testing of Assumptions
 
 We then tested the model to see if it passed the 4 assumptions of linear regression, known by the acronym LINE:
