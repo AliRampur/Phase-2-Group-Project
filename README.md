@@ -2,7 +2,7 @@
 
 For this project, we use multiple linear regression modeling to analyze house sales in a King County, a large county located in the State of Washington.
 
-   - Link to Technical Notebook: 
+   - Link to Technical Notebook: https://github.com/AliRampur/Phase-2-Group-Project/blob/main/Project%20Notebook.ipynb
    - Link to final presentation: https://github.com/AliRampur/Phase-2-Group-Project/blob/main/Presentation.pdf
    - Link to original data sources: https://github.com/AliRampur/Phase-2-Group-Project/tree/main/data
 
